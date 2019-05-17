@@ -12,15 +12,27 @@ namespace LaunchPads
         {
             this.apiUrl = apiUrl;
         }
+        //This is a kludge to allow backing this repo with test data.  
+        //I'd probably replace it with better injection or something, inject
+        //the fetcher into the repo, etc.
+        public APIPadRepo(SpaceXPad[] testData)
+        {
+            cache = testData;
+        }
+
         private readonly string apiUrl;
 
-        private SpaceXPad[] cache;
+        private SpaceXPad[] cache; //TODO: periodically expire.
 
         public async Task<Pad> Get(string id)
         {
             await fetch();
 
-            return cache.SingleOrDefault(x => x.Id == id).ToPad();
+            var xpad = cache.SingleOrDefault(x => x.Id == id);
+
+            if (xpad == null) return null;
+
+            return xpad.ToPad();
         }
 
 
@@ -45,4 +57,5 @@ namespace LaunchPads
 
         }
     }
+
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using LaunchPads.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace LaunchPads.Controllers
 {
@@ -17,10 +18,12 @@ namespace LaunchPads.Controllers
     public class LaunchpadsController : ControllerBase
     {
         IPadRepo Pads;
+        ILogger Logger;
 
-        public LaunchpadsController(IPadRepo Pads)
+        public LaunchpadsController(IPadRepo pads, ILogger<LaunchpadsController> logger)
         {
-            this.Pads = Pads;
+            this.Pads = pads;
+            this.Logger = logger;
         }
 
         [HttpGet]
@@ -33,7 +36,15 @@ namespace LaunchPads.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Pad>> Get(string id)
         {
-            return await Pads.Get(id);
+            Logger.Log(LogLevel.Information, "Someone's getting {0}", id);
+
+            var pad = await Pads.Get(id);
+            if (pad == null)
+            {
+                Logger.Log(LogLevel.Information, "..But they didn't get it.");
+                return NotFound();
+            }
+            return pad;
         }
 
     }

@@ -28,10 +28,10 @@ namespace LaunchPads
 
             //swap this for a db repo some day eg. 
             //services.AddSingleton<IPadRepo>(new DBRepo("hostname", "blah", "blah"));
-            services.AddSingleton<IPadRepo>(new APIPadRepo(Configuration["ApiDataSource"]));
-
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSingleton<IPadRepo>(new APIPadRepo(Configuration["ApiDataSource"]))
+                .AddLogging()
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
